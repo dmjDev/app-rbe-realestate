@@ -28,10 +28,10 @@ export default function Footer({ session }: { session: Session | null }) {
               ) : (
                 <Link href="/auth" className="textbutton">Go in</Link>
               )}
-              <Link href="/info/about" className="textbutton">About us</Link>
-              <Link href="/info/contact" className="textbutton">Contact with RBE</Link>
-              <Link href="/legal/privacy" className="textbutton text-xs opacity-70">Privacy</Link>
-              <Link href="/legal/cookies" className="textbutton text-xs opacity-70">Cookies policy</Link>
+              <Link href="#" className="textbutton">About us</Link> {/* /info/about */}
+              <Link href="#" className="textbutton">Contact with RBE</Link> {/* /info/contact */}
+              <Link href="#" className="textbutton">Privacy</Link> {/* /legal/privacy */}
+              <Link href="#" className="textbutton">Cookies policy</Link> {/* /legal/cookies */}
             </div>
           </div>
 
