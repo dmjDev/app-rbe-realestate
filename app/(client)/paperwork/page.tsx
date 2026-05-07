@@ -6,7 +6,7 @@ import Link from "next/link";
 import UpgradePlan from "./components/UpgradePlan";
 
 const Paperwork = async () => {
-  const session = await auth.api.getSession({ headers: await headers() }); console.log('session', session)
+  const session = await auth.api.getSession({ headers: await headers() });
   let isSession = false;
   if (session) isSession = true;
   let isRol10 = false;
