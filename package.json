@@ -1,26 +1,50 @@
 {
-  "name": "app-nppb-3",
-  "version": "0.1.0",
+  "name": "app-rbe-realstate",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@prisma/adapter-pg": "^7.4.2",
+    "@prisma/client": "^7.4.2",
+    "better-auth": "^1.4.19",
+    "browser-image-compression": "^2.0.2",
+    "dotenv": "^17.3.1",
+    "lodash.inrange": "^3.3.6",
+    "lucide-react": "^1.7.0",
+    "maplibre-gl": "^5.21.1",
     "next": "16.1.6",
+    "nodemailer": "^8.0.1",
+    "pg": "^8.19.0",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-hook-form": "^7.71.2",
+    "react-icons": "^5.5.0",
+    "react-player": "^3.4.0",
+    "react-router-dom": "^7.13.1",
+    "sharp": "^0.34.5",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/lodash.inrange": "^3.3.9",
     "@types/node": "^20",
+    "@types/nodemailer": "^7.0.11",
+    "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "prisma": "^7.5.0",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

@@ -1,0 +1,2 @@
+-- CreateEnum
+CREATE TYPE "frequencyPay" AS ENUM ('DAILY', 'WEEKLY', 'FORTNIGHTLY', 'MONTHLY', 'ANNUALLY');

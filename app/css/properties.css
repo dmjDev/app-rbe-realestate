@@ -1,0 +1,129 @@
+.property-card {
+  @apply rounded-3xl overflow-hidden min-h-120; /* 480px */
+  background-color: var(--form-card-bg);
+  border: 1px solid var(--form-border);
+  translate: 0 0;
+  transition: translate 1s ease-in-out, box-shadow 0.5s ease;
+  will-change: translate;
+}
+.property-card-inactive {
+  @apply rounded-3xl overflow-hidden min-h-120; /* 480px */
+  background-color: var(--form-card-bg);
+  border: 2px solid var(--app-accent);
+  translate: 0 0;
+  transition: translate 1s ease-in-out, box-shadow 0.5s ease;
+  will-change: translate;
+}
+
+.property-card:hover {
+  translate: 0 -2px; 
+  box-shadow: 0 10px 30px var(--app-element-bg);
+  transition: translate 0.3s ease-out, box-shadow 0.3s ease;
+}
+
+.carousel-btn {
+  @apply absolute top-1/2 -translate-y-1/2 bg-white/60 backdrop-blur-md text-slate-900 p-2 rounded-full shadow-lg z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white active:scale-95;
+}
+.carousel-btn-left { @apply left-3; }
+.carousel-btn-right { @apply right-3; }
+
+.price-tag {
+  @apply text-xl font-extrabold tracking-tight flex justify-center items-center;
+  color: var(--app-accent);
+}
+
+.ref-tag {
+  @apply text-sm font-light tracking-tight flex justify-between items-center w-full;
+  color: var(--app-text-faded);
+}
+
+/* DETAILS */ 
+.bg-energy-a { background-color: #00a651; }
+.bg-energy-b { background-color: #4cb748; }
+.bg-energy-c { background-color: #c3d62d; }
+.bg-energy-d { background-color: #fff200; }
+.bg-energy-e { background-color: #fba919; }
+.bg-energy-f { background-color: #f05a28; }
+.bg-energy-g { background-color: #ed1c24; }
+.bg-energy-pending { background-color: var(--app-text-faded); }
+
+.viewerButtonActive {
+  background-color: var(--app-accent);
+  color: white;
+  cursor: default;
+}
+.viewerButton {
+  background-color: color-mix(in srgb, #d8d8d8, transparent 50%); /*rgb(0 0 0 / 0.2); */
+  color: white;
+  transition: background-color 0.2s, color 0.2s;
+  cursor: pointer;
+}
+
+.viewerButton:hover {
+  background-color: white;
+  color: var(--app-accent);
+}
+
+
+/* SEARCH PRICE */
+/* Permite que el 'thumb' sea clickable pero el resto del input no interfiera */
+input[type="range"]::-webkit-slider-thumb {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Opcional: Estilo para que el thumb se vea mejor sobre el fondo */
+input[type="range"] {
+  outline: none;
+}
+
+/* Aplicamos a los navegadores modernos */
+.slider-thumb {
+  accent-color: var(--app-accent);
+}
+
+/* Si quieres personalizar la bolita (thumb) más a fondo con la variable */
+.slider-thumb::-webkit-slider-thumb {
+  pointer-events: auto;
+  appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: var(--app-accent);
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+
+.slider-thumb::-moz-range-thumb {
+  pointer-events: auto;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: var(--app-accent);
+  cursor: pointer;
+  border: 2px solid white;
+}
+
+.icon-button {
+  @apply p-1.5 rounded-full transition-colors duration-200;
+  background-color: color-mix(in srgb, #d8d8d8, transparent 50%);
+  color: white;
+}
+.icon-button:hover {
+  background-color: white;
+  color: var(--app-accent);
+}
+
+.heart-button {
+  @apply absolute top-2 right-2 z-30 h-7 w-7 flex items-center justify-center p-1 rounded-full transition-colors duration-200;
+  background-color: color-mix(in srgb, #d8d8d8, transparent 50%);
+}
+.heart-button:hover {
+  background-color: transparent;
+}

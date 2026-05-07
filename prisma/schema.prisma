@@ -1,0 +1,314 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                String    @id
+  name              String
+  email             String
+  emailVerified     Boolean   @default(false)
+  image             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  userRol           Int       @default(1)
+  role              Role      @relation(fields: [userRol], references: [level])
+  phone             String?
+  urlSearch         String?
+
+  // VICULACION DE USER CON OTRAS COLECCIONES, con esta entrada al consultar la colección se puede tener acceso a datos de User
+  sessions          Session[]
+  accounts          Account[]
+
+  items             Items[]
+  isaved            ItemsSaved[]
+  msgClient         ItemChats[] @relation("ClientMessages")
+  msgManager        ItemChats[] @relation("ManagerMessages")
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Role {
+  id    String @id @default(cuid())
+  level Int    @unique // 1000, 100, 10, 1
+  name  String @unique // "SUPER_ADMIN", "ADMIN", etc.
+
+  // Relación con el usuario
+  users User[]
+
+  @@map("role") // Nombre físico de la tabla en Postgres
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime // @db.Timestamptz(3)  // <--- CRÍTICO
+  createdAt  DateTime @default(now()) //@db.Timestamptz(3)
+  updatedAt  DateTime @updatedAt //@db.Timestamptz(3)
+  attempts   Int?     @default(0)
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Items {
+  id                String    @id @default(cuid())
+  managerId         String
+  manager           User      @relation(fields: [managerId], references: [id])
+  itemName          String
+  itemDescription   String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  itemRef           String    @unique
+  active            Boolean   @default(true)
+  homePromo         Boolean   @default(false)
+
+  iprops            Property?
+  isaved            ItemsSaved[]
+  ichats            ItemChats[]
+
+  @@map("items")
+}
+
+// Enums para estandarizar opciones
+enum OperationType {
+  SALE
+  RENT
+  RENT_TO_BUY
+  HOLIDAY_RENT
+  LIFE_ESTATE
+  SHARE
+  TRANSFER
+}
+
+enum PropertyType {
+  FLAT
+  APARTMENT
+  PENTHOUSE
+  DUPLEX
+  STUDIO
+  TERRACED_HOUSES
+  DETACHED_CHALETS
+  VILLAS
+  COTTAGE
+  BUNGALOW
+  LOFT
+  ROOMS
+  COMMERCIAL_PROPERTIES
+  GARAGES
+  STORAGE_ROOMS
+  LAND
+  OFFICES
+  BUILDINGS
+}
+
+enum EnergyRating {
+  A
+  B
+  C
+  D
+  E
+  F
+  G
+  PENDING
+}
+
+enum Orientation {
+  N
+  NE
+  E
+  SE
+  S
+  SO
+  O
+  NO
+}
+
+enum FlooringType {
+  HARDWOOD         // Parqué / Madera maciza
+  LAMINATE         // Laminado
+  VINYL            // Vinílico (LVT)
+  CERAMICTILE      // Baldosa cerámica
+  PORCELAINTILE    // Gres porcelánico (muy común en obra nueva)
+  MARBLE           // Mármol
+  GRANITE          // Granito
+  POLISHEDCONCRETE // Cemento pulido / Microcemento
+  TRAVERTINE       // Travertino
+  CARPET           // Moqueta
+  NATURALSTONE     // Piedra natural
+  TERRAZO          // Terrazo
+  BAMBOO           // Bambú (opción ecológica)
+}
+
+enum FrequencyPay {
+  DAILY
+  WEEKLY
+  FORTNIGHTLY
+  MONTHLY
+  ANNUALLY
+}
+
+model Property {
+  id                    String         @id @default(cuid())
+  itemId                String         @unique
+  item                  Items          @relation(fields: [itemId], references: [id])
+  isOwner               Boolean        @default(false)
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  
+  // Operación básica
+  operType              OperationType
+  propType              PropertyType
+  price                 Float
+  priceMin              Float?
+  frequencyPay          FrequencyPay?
+  isNewDevelopment      Boolean        @default(false)
+  builtYear             Int?
+  
+  // Ubicación (Campos para filtros de Idealista)
+  province              String
+  municipality          String
+  neighborhood          String?
+  streetName            String?
+  streetNumber          String?
+  floor                 String?
+  isExterior            Boolean        @default(true)
+  showAddress           Boolean        @default(false)
+  orientation           Orientation?
+
+  // Coordenadas (Para PostGIS)
+  latitude              Float?
+  longitude             Float?
+
+  // Superficie y estancias
+  builtSize             Float?
+  usefulSize            Float?
+  rooms                 Int?
+  bathrooms             Int?
+  
+  // Tipo de suelo
+  flooringMaterial         FlooringType?
+
+  // Características extra
+  hasLift               Boolean        @default(false)
+  hasGarden             Boolean        @default(false)
+  hasPool               Boolean        @default(false)
+  hasTerrace            Boolean        @default(false)
+  hasBalcony            Boolean        @default(false)
+  hasStorageRoom        Boolean        @default(false)
+  hasGarage             Boolean        @default(false)
+  isFurnished           Boolean        @default(false)
+  floatingFloor         Boolean        @default(false)
+  centralHeating        Boolean        @default(false)
+  underfloorHeating     Boolean        @default(false)
+  ductedAirc            Boolean        @default(false)
+  splitsAirc            Boolean        @default(false)
+  climalitWindow        Boolean        @default(false)
+  thermalBridgeWindow   Boolean        @default(false)
+  electricBlinds        Boolean        @default(false)
+  premiumAppliance      Boolean        @default(false)
+  seaSight              Boolean        @default(false)
+  mountainSight         Boolean        @default(false)
+  culturalSight         Boolean        @default(false)
+  commonRooms           Boolean        @default(false)
+  commonPool            Boolean        @default(false)
+  commonGym             Boolean        @default(false)
+  padelArea             Boolean        @default(false)
+  childrenArea          Boolean        @default(false)
+  socialArea            Boolean        @default(false)
+  goalkeeper            Boolean        @default(false)
+  securityCameras       Boolean        @default(false)
+  alarm                 Boolean        @default(false)
+  accesibility          Boolean        @default(false)
+  
+  // Certificado Energético
+  energyRating          EnergyRating   @default(PENDING)
+  emissionsRating       EnergyRating   @default(PENDING)
+
+  // Multimedia
+  imgUrl                Json?
+  videoUrl              String?
+  virtualTourUrl        String?
+
+  // Gestión
+  communityCosts        Float?
+  annualTax             Float?
+
+  @@map("properties")
+}
+
+model ItemsSaved {
+  id                String    @id @default(cuid())
+  itemId            String
+  item              Items     @relation(fields: [itemId], references: [id])
+  clientId          String
+  client            User      @relation(fields: [clientId], references: [id])
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  state             String    @default("visited") // like, likeVisited o visited
+
+  @@map("itemssaved")
+}
+
+model ItemChats {
+  id                String    @id @default(cuid())
+  itemId            String
+  item              Items     @relation(fields: [itemId], references: [id])
+  clientId          String?
+  client            User?     @relation("ClientMessages", fields: [clientId], references: [id])
+  managerId         String?
+  manager           User?     @relation("ManagerMessages", fields: [managerId], references: [id])
+  message           String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@map("itemchats")
+}

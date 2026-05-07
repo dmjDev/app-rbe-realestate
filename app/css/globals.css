@@ -1,0 +1,271 @@
+@import "tailwindcss";
+
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+@import "./variables.css";
+
+@import "./cms-form.css";
+@import './properties.css';
+
+@plugin "tailwindcss-animate";
+
+html {
+  scrollbar-gutter: stable;
+  scroll-behavior: auto;
+}
+
+body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#search {
+  scroll-margin-top: var(--navbar-h);
+}
+
+/* Custom scrollbar */
+@layer base {
+  :root {
+    --sb-track: var(--app-moon);
+    --sb-thumb: var(--app-bg);
+    --sb-size: 5px;
+  }
+
+  body::-webkit-scrollbar { width: var(--sb-size); }
+  body::-webkit-scrollbar-track { background: var(--sb-track); }
+  body::-webkit-scrollbar-thumb { 
+    background: var(--sb-thumb); 
+    border-radius: 10px;
+  }
+
+  body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--sb-thumb) var(--sb-track);
+    background-color: var(--app-bg);
+    color: var(--app-text);
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus {
+    box-shadow:
+      inset 0 0 0 1px var(--form-element-bg-autofillChrome), 
+      inset 0 0 0 1000px var(--form-element-bg-autofillChrome) !important;
+    -webkit-text-fill-color: var(--form-text) !important; /* Tu color de texto */
+    transition: background-color 5000s ease-in-out 0s; /* Retrasa el cambio de color */
+    outline: none;
+  }
+}
+
+.ancho-global {
+  @apply max-w-360 mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Theme classes */
+.bgprimary {
+  background-color: var(--app-bg);
+}
+.bgTransparent20  {
+  background-color: color-mix(in srgb, var(--app-bg-hover), transparent 20%);
+}
+.bgTransparent50  {
+  background-color: color-mix(in srgb, var(--app-bg-hover), transparent 50%);
+}
+.bgTransparent90  {
+  background-color: color-mix(in srgb, var(--app-bg-hover), transparent 90%);
+}
+.txtprimary {
+  color: var(--app-text);
+}
+.bgsecondaryborder {
+  @apply rounded-lg;
+  border: 1px solid var(--app-element-bg);
+}
+.txtsecondary {
+  color: var(--app-text-faded);
+}
+.txtsecondaryfaded {
+  color: var(--app-moon);
+}
+.txtaccent {
+  color: var(--app-accent);
+}
+.txterror {
+  color: var(--form-text-error);
+}
+.txtsuccess{
+  color: var(--form-text-success);
+}
+.auxData {
+  color: var(--app-text-faded);
+  font-size: 0.8rem;
+  font-style: oblique;
+}
+
+.title-head {
+  width: 100%;
+  text-align: center;
+  align-items: center;
+
+  @apply text-2xl
+}
+
+/* Button styles */
+.basebutton {
+  @apply flex items-center justify-center rounded-full shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 py-2 text-base font-medium leading-3;
+  width: 100%;
+  max-width: 300px;
+  height: 50px;
+}
+.textbutton {
+  @apply text-sm font-medium transition-colors cursor-pointer;
+  color: var(--app-accent);
+}
+.textbutton:hover {
+  color: var(--app-accent-hover);
+}
+.appbutton {
+  background-color: var(--app-accent);
+  border: 1px solid var(--app-accent);
+  color: var(--app-moon-light);
+  transition: outline-color 0.2s, outline-offset 0.2s;
+  outline: 1px solid transparent;
+  outline-offset: 0px;
+}
+.appbutton:focus {
+  border-color: var(--app-accent);
+  outline-width: 1px;
+  outline-color: var(--app-accent); 
+  outline-style: solid;
+  outline-offset: 1px;
+}
+.appbutton:hover {
+  background-color: var(--app-accent-hover);
+}
+
+
+
+.delbutton {
+  background-color: var(--app-text-error);
+  border: 1px solid var(--app-text-error);
+  color: var(--app-moon-light);
+  transition: outline-color 0.2s, outline-offset 0.2s;
+  outline: 1px solid transparent;
+  outline-offset: 0px;
+}
+.delbutton:focus {
+  border-color: var(--app-text-error);
+  outline-width: 1px;
+  outline-color: var(--app-text-error); 
+  outline-style: solid;
+  outline-offset: 1px;
+}
+.delbutton:hover {
+  background-color: var(--app-text-error-hover);
+}
+
+
+
+
+
+.appwhitebutton {
+  background-color: var(--app-moon-light);
+  border: 1px solid var(--app-moon);
+  color: var(--app-title-dark);
+  transition: outline-color 0.2s, outline-offset 0.2s;
+  outline: 2px solid transparent;
+  outline-offset: 0px;
+}
+.appwhitebutton:focus {
+  border-color: var(--app-accent-focus);
+  outline-width: 2px;
+  outline-color: var(--app-accent-focus); 
+  outline-style: solid;
+  outline-offset: 0px;
+}
+.appwhitebutton:hover {
+  background-color: var(--app-moon);
+  color: var(--app-moon-light);
+}
+.appblackbutton {
+  background-color: var(--app-moon-dark);
+  border: 1px solid var(--app-moon);
+  color: var(--app-moon-light);
+  transition: outline-color 0.2s, outline-offset 0.2s;
+  outline: 2px solid transparent;
+  outline-offset: 0px;
+}
+.appblackbutton:focus {
+  border-color: var(--app-accent-focus);
+  outline-width: 2px;
+  outline-color: var(--app-accent-focus); 
+  outline-style: solid;
+  outline-offset: 0px;
+}
+.appblackbutton:hover {
+  background-color: var(--app-moon);
+}
+.logobutton {
+  @apply leading-3 p-2 my-2 rounded-md text-sm font-medium transition-colors;
+  background-color: var(--app-accent);
+  color: var(--app-moon-light);
+}
+.navonbutton {
+  @apply leading-3 p-3 rounded-full text-sm font-medium transition-colors;
+  background-color: var(--app-accent);
+  color: var(--app-moon-light);
+}
+.navoffbutton {
+  @apply leading-3 p-3 rounded-full text-sm font-medium transition-colors;
+  border: 1px solid var(--app-accent);
+  background-color: var(--app-moon-light);
+  color: var(--app-accent);
+}
+.navoffbutton:hover {
+  background-color: var(--app-accent-hover);
+  color: var(--app-title);
+}
+.profileonbutton {
+  @apply h-10 w-10 p-1 border rounded-full text-xl font-bold transition-colors flex items-center justify-center;
+  background-color: var(--app-accent);
+  color: var(--app-moon-light);
+}
+.profileoffbutton {
+  @apply h-10 w-10 p-1 border rounded-full text-xl font-bold transition-colors flex items-center justify-center;
+  border: 1px solid var(--app-accent);
+  background-color: var(--app-moon-light);
+  color: var(--app-accent);
+}
+.profileoffbutton:hover {
+  background-color: var(--app-accent-hover);
+  color: var(--app-title);
+}
+
+/* Hamburger menu lines */
+.hamburger-line {
+  @apply block w-6 h-0.5 transition-all duration-300 ease-in-out;
+  background-color: var(--app-accent);
+}
+
+/* Custom breakpoint for navigation */
+@theme {
+  --breakpoint-nav: 540px;
+}
+
+/* Hamburger menu styles */
+.hamburger-line {
+  @apply block w-6 h-0.5 transition-all duration-300 ease-in-out;
+  background-color: var(--app-accent);
+}
+
+.mobile-menu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.mobile-menu-open {
+  max-height: 400px;
+  transition: max-height 0.3s ease-in;
+}
