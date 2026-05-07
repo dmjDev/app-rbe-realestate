@@ -9,14 +9,18 @@ import { it } from "node:test";
 
 // Configuración de Gmail
 const transporter = nodemailer.createTransport({
-  host: "74.125.133.108", //"smtp.gmail.com",
-  port: 465,
-  secure: true,
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD,
   },
   family: 4,
+  connectionTimeout: 10000,
+  tls: {
+    rejectUnauthorized: false
+  }
 } as any);
 // const transporter = nodemailer.createTransport({
 //   service: "gmail",
