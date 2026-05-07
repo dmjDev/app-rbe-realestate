@@ -3,7 +3,7 @@
 import { auth } from "@/lib/auth/auth";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import inRange from 'lodash.inrange';
+import { inRange } from 'lodash';
 import { signOut } from "@/lib/auth/auth-actions";
 import { useEffect, useRef, useState } from "react";
 

@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import inRange from 'lodash.inrange';
+import { inRange } from 'lodash';
 import prisma from "@/lib/prisma";
 import { FormComponent } from "./components/FormComponent";
 

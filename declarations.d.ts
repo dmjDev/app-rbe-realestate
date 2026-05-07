@@ -10,4 +10,4 @@ declare module "*.css" {
   export default content;
 }
 
-declare module 'lodash.inrange';
+declare module 'lodash';
