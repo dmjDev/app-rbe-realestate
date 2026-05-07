@@ -9,17 +9,19 @@ import { it } from "node:test";
 
 // Configuración de Gmail
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  // Esta es una de las IPs oficiales de smtp.gmail.com (IPv4)
+  host: "142.251.163.108", 
   port: 587,
-  secure: false,
+  secure: false, 
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD,
   },
+  // Al ser una IP, family: 4 es redundante pero lo dejamos por si acaso
   family: 4,
-  connectionTimeout: 10000,
   tls: {
-    rejectUnauthorized: false
+    // Es vital para que no rechace el certificado de Gmail al no coincidir el nombre
+    servername: "smtp.gmail.com" 
   }
 } as any);
 // const transporter = nodemailer.createTransport({
