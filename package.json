@@ -30,10 +30,10 @@
     "react-router-dom": "^7.13.1",
     "sharp": "^0.34.5",
     "tailwindcss-animate": "^1.0.7",
+    "@tailwindcss/postcss": "^4",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
     "@types/lodash.inrange": "^3.3.9",
     "@types/node": "^20",
     "@types/nodemailer": "^7.0.11",
