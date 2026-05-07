@@ -94,7 +94,7 @@ export const useMap_Controller = ({ watch, setValue, isInitialLoaded }: Props) =
 
   // 3. FUNCIÓN: De CLIC MAPA a SELECTS (Geocodificación Inversa) ///////////////////////////////////////////////////////
   useEffect(() => {
-    const debouncedChangeMap = debounce(async (watchLat, watchLng) => {
+    const debouncedChangeMap = debounce(async (watchLat: any, watchLng: any) => {
       // Si el cambio de coordenadas viene de haber elegido un municipio en el SELECT,
       // no hacemos geocodificación inversa.
       if (isUpdatingFromSelect.current) return;
