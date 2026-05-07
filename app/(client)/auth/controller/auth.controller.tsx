@@ -188,7 +188,7 @@ export function useAuthController() {
         setError(err.message || "Invalid email or password");
       }
     } finally {
-      // setIsLoading(false);
+      setIsLoading(false);
     }
   });
 

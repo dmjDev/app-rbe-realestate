@@ -1,6 +1,17 @@
-import { Bird, Birdhouse, Expand, Sunrise } from "lucide-react"
+import { Bird, Birdhouse, Expand, Sunrise } from "lucide-react";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth/auth";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import UpgradePlan from "./components/UpgradePlan";
 
-const Paperwork = () => {
+const Paperwork = async () => {
+  const session = await auth.api.getSession({ headers: await headers() }); console.log('session', session)
+  let isSession = false;
+  if (session) isSession = true;
+  let isRol10 = false;
+  if (session && session?.user.userRol >= 10) isRol10 = true;
+
   return (
     <div className="bgprimary txtprimary flex flex-col items-center border-0 overflow-y-auto">
       <main className="ancho-global">
@@ -21,7 +32,17 @@ const Paperwork = () => {
               <p className="txtprimary leading-4 mb-1">Mark the properties you've already visited.</p>
               <p className="txtprimary leading-4 mb-1">Add favorites to your preferred ones.</p>
               <p className="txtprimary leading-4 mb-5">View your messages for each property.</p>
-              <button className="basebutton appbutton">Get You FREE Plan</button>
+              {!isSession && (
+                <Link
+                  href="/auth"
+                  className="basebutton appbutton text-center"
+                >
+                  Better Client Experience for FREE
+                </Link>
+              )}
+              {isSession && (
+                <button className="basebutton appbutton" disabled>Better Client Experience for FREE</button>
+              )}
             </div>
 
             <div className="bgsecondaryborder txtprimary rounded-xl shadow-lg p-8 border hover:shadow-xl transition-shadow">
@@ -39,7 +60,12 @@ const Paperwork = () => {
               <p className="txtprimary leading-4 mb-5">Receive buyers messages.</p>
               <p className="txtaccent text-5xl text-center font-bold">5€</p>
               <p className="txtaccent text-lg text-center -mt-1 mb-5 leading-4">annualy<br />(first month free)</p>
-              <button className="basebutton appbutton">Get You FREE Plan</button>
+              {!isSession && (
+                <UpgradePlan plan="dataManager" />
+              )}
+              {isSession && (
+                <button className="basebutton appbutton">Get You FREE Plan for a month</button>
+              )}
             </div>
 
             <div className="bgsecondaryborder txtprimary rounded-xl shadow-lg p-8 border hover:shadow-xl transition-shadow">
