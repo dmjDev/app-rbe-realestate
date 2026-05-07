@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "noImplicitAny": false,         // <--- Permite que las librerías sin tipos se traten como 'any'
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
