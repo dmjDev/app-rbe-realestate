@@ -43,7 +43,7 @@ export default function Navigation({ session }: { session: Session | null }) {
   };
 
   const changeLang = (lang: string) => {
-    console.log('lang changed', lang)
+    // console.log('lang changed', lang)
     alert('Under Construction');
   };
 

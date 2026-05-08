@@ -39,7 +39,7 @@ export async function GET() {
           foundImages = [...foundImages, ...addUrls];
         }
 
-        console.log('foundImages', foundImages)
+        // console.log('foundImages', foundImages)
 
         return {
           itemId: itemIdStr,

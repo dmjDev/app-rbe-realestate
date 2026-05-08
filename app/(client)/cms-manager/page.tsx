@@ -27,7 +27,7 @@ export default async function ManagerPage({ searchParams }: { searchParams: Prom
       },
     });
   }
-  console.log('propertieData', propertieData, typeof (propertieData))
+  // console.log('propertieData', propertieData, typeof (propertieData))
 
   const tsxml =
     <div className="bgprimary txtprimary items-center border-0 overflow-y-auto">
