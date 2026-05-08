@@ -14,7 +14,6 @@ export default async function PropertiesIdPage({
   const { id } = await params;
   const { idSaved, userId, state, edit: editString } = await searchParams;
   const edit = editString === "true";
-  let flatPropertieData = null;
 
   // CONSULTA DB DATOS POR id
   const propertieData = await prisma.items.findUnique({
@@ -24,34 +23,34 @@ export default async function PropertiesIdPage({
     },
   });
 
-  if (propertieData) {
-    // 1. Desestructuramos el objeto único directamente
-    const { iprops, id, createdAt, updatedAt, ...rest } = propertieData;
-
-    // 2. Extraemos el contenido de iprops con alias para los conflictos
-    const {
-      id: ipropId,
-      createdAt: ipropCreatedAt,
-      updatedAt: ipropUpdatedAt,
-      ...internalProps
-    } = iprops || {};
-
-    // 3. Creamos el objeto aplanado
-    const flattened = {
-      id,
-      createdAt: createdAt?.toLocaleString(),
-      updatedAt: updatedAt?.toLocaleString(),
-      ...rest,
-      ipropId: iprops?.id,
-      ipropCreatedAt: iprops?.createdAt?.toLocaleString(),
-      ipropUpdatedAt: iprops?.updatedAt?.toLocaleString(),
-      ...internalProps,
-    };
-    flatPropertieData = flattened;
-  } else {
+  if (!propertieData) {
     console.log('Data not found, id:', id);
     return <></>;
   }
+
+  // 1. Desestructuramos el objeto único directamente
+  const { iprops, id: itemId, createdAt, updatedAt, ...rest } = propertieData;
+
+  // 2. Extraemos el contenido de iprops con alias para los conflictos
+  const {
+    id: ipropId,
+    createdAt: ipropCreatedAt,
+    updatedAt: ipropUpdatedAt,
+    ...internalProps
+  } = iprops || {};
+
+  // 3. Creamos el objeto aplanado
+  const flatPropertieData = {
+    id: itemId,
+    createdAt: createdAt?.toLocaleString(),
+    updatedAt: updatedAt?.toLocaleString(),
+    ...rest,
+    ipropId: iprops?.id,
+    ipropCreatedAt: iprops?.createdAt?.toLocaleString(),
+    ipropUpdatedAt: iprops?.updatedAt?.toLocaleString(),
+    ...internalProps,
+  };
+
   // console.log('flatPropertieData', flatPropertieData);
 
   // CONSULTA API VIDEO POR id

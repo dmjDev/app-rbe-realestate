@@ -1,16 +1,17 @@
 import { Bird, Birdhouse, Expand, Sunrise } from "lucide-react";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth/auth";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import UpgradePlan from "./components/UpgradePlan";
 
 const Paperwork = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
   let isSession = false;
-  if (session) isSession = true;
-  let isRol10 = false;
-  if (session && session?.user.userRol >= 10) isRol10 = true;
+  let rol = 0;
+  if (session) {
+    isSession = true;
+    rol = session.user.userRol;
+  }
 
   return (
     <div className="bgprimary txtprimary flex flex-col items-center border-0 overflow-y-auto">
@@ -26,23 +27,27 @@ const Paperwork = async () => {
                 <Bird size={100} />
               </div>
               <h1 className="text-2xl font-semibold txtaccent text-center leading-5">Client Plan for free</h1>
-              <p className="text-lg font-light txtsecondary mt-1 mb-5 text-center leading-4">Improve your experience</p>
-              <p className="txtprimary leading-4 mb-1">Manage your data.</p>
-              <p className="txtprimary leading-4 mb-1">Search saving active.</p>
-              <p className="txtprimary leading-4 mb-1">Mark the properties you've already visited.</p>
-              <p className="txtprimary leading-4 mb-1">Add favorites to your preferred ones.</p>
-              <p className="txtprimary leading-4 mb-5">View your messages for each property.</p>
-              {!isSession && (
-                <Link
-                  href="/auth"
-                  className="basebutton appbutton text-center"
-                >
-                  Better Client Experience for FREE
-                </Link>
-              )}
-              {isSession && (
-                <button className="basebutton appbutton" disabled>Better Client Experience for FREE</button>
-              )}
+              <div className="flex flex-col items-center justify-center">
+                <p className="text-lg font-light txtsecondary mt-1 mb-5 text-center leading-4">Improve your experience</p>
+                <p className="text-md font-light txtprimary leading-4 text-left w-max-60 px-2 mb-5">
+                  Manage your data.<br />
+                  Search saving active.<br />
+                  Mark the properties you've already visited.<br />
+                  Add your favorites to your list and revisit them whenever you want.<br />
+                  View your messages for each property.<br />
+                </p>
+                {!isSession && (
+                  <Link
+                    href="/auth"
+                    className="basebutton appbutton text-center"
+                  >
+                    Better Client Experience for FREE
+                  </Link>
+                )}
+                {isSession && (
+                  <button className="basebutton appbutton" disabled>Better Client Experience for FREE</button>
+                )}
+              </div>
             </div>
 
             <div className="bgsecondaryborder txtprimary rounded-xl shadow-lg p-8 border hover:shadow-xl transition-shadow">
@@ -50,22 +55,35 @@ const Paperwork = async () => {
                 <Birdhouse size={100} />
               </div>
               <h1 className="text-2xl font-semibold txtaccent text-center leading-5">Owner Plan for free</h1>
-              <p className="text-lg font-light txtsecondary mt-1 mb-5 leading-4 text-center">Get started today</p>
-              <p className="txtprimary leading-4 mb-1">Manage your data.</p>
-              <p className="txtprimary leading-4 mb-1">Search saving active.</p>
-              <p className="txtprimary leading-4 mb-1">Mark the properties you've already visited.</p>
-              <p className="txtprimary leading-4 mb-1">Add favorites to your preferred ones.</p>
-              <p className="txtprimary leading-4 mb-1">View your messages for each property.</p>
-              <p className="txtprimary leading-4 mb-1">List your property for free for a month.</p>
-              <p className="txtprimary leading-4 mb-5">Receive buyers messages.</p>
-              <p className="txtaccent text-5xl text-center font-bold">5€</p>
-              <p className="txtaccent text-lg text-center -mt-1 mb-5 leading-4">annualy<br />(first month free)</p>
-              {!isSession && (
-                <UpgradePlan plan="dataManager" />
-              )}
-              {isSession && (
-                <button className="basebutton appbutton">Get You FREE Plan for a month</button>
-              )}
+              <div className="flex flex-col items-center justify-center">
+                <p className="text-lg font-light txtsecondary mt-1 mb-5 leading-4 text-center">Get started today</p>
+                <p className="text-md font-light txtprimary leading-4 text-left w-max-60 px-2 mb-5">
+                  Manage your data.<br />
+                  Search saving active.<br />
+                  Mark the properties you've already visited.<br />
+                  Add your favorites to your list and revisit them whenever you want.<br />
+                  View your messages for each property.<br />
+                  List your property for free for a month.<br />
+                  Receive buyers messages.<br />
+                </p>
+                <p className="txtaccent text-5xl text-center font-bold">5€</p>
+                <p className="txtaccent text-lg text-center -mt-1 mb-5 leading-4">annualy<br />(first month free)</p>
+                {!isSession && (
+                  <Link
+                    href="/auth"
+                    className="basebutton appbutton text-center"
+                  >
+                    Get You FREE Plan for a month
+                  </Link>
+                )}
+                {(isSession && rol < 10) && (
+                  // UPGRADE TO PLAN USERMANAGER
+                  <UpgradePlan rol={10} session={session as any} />
+                )}
+                {(isSession && rol >= 10) && (
+                  <button className="basebutton appbutton" disabled>Get You FREE Plan for a month</button>
+                )}
+              </div>
             </div>
 
             <div className="bgsecondaryborder txtprimary rounded-xl shadow-lg p-8 border hover:shadow-xl transition-shadow">
@@ -73,20 +91,24 @@ const Paperwork = async () => {
                 <Expand size={100} />
               </div>
               <h1 className="text-2xl font-semibold txtaccent text-center leading-5">Agency Pro Plan</h1>
-              <p className="text-lg font--light txtsecondary mt-1 mb-5 leading-4 text-center">Improve your benefits</p>
-              <p className="txtprimary leading-4 mb-1">Manage your data.</p>
-              <p className="txtprimary leading-4 mb-1">Search saving active.</p>
-              <p className="txtprimary leading-4 mb-1">Mark the properties you've already visited.</p>
-              <p className="txtprimary leading-4 mb-1">Add favorites to your preferred ones.</p>
-              <p className="txtprimary leading-4 mb-1">Simple panel for storing data, images, videos, and virtual tours.</p>
-              <p className="txtprimary leading-4 mb-1">Publish your ad just once and it will appear on multiple platforms.</p>
-              <p className="txtprimary leading-4 mb-1">Get your listings on popular platforms like Idealista, Mivilla, ...</p>
-              <p className="txtprimary leading-4 mb-1">View your messages for each property.</p>
-              <p className="txtprimary leading-4 mb-1">List up to 10 properties for unlimited time.</p>
-              <p className="txtprimary leading-4 mb-5">Manage buyers messages.</p>
-              <p className="txtaccent text-5xl text-center font-bold">15€</p>
-              <p className="txtaccent text-lg text-center -mt-3 mb-5">monthly</p>
-              <button className="basebutton appbutton">Get You PRO Plan</button>
+              <div className="flex flex-col items-center justify-center">
+                <p className="text-lg font--light txtsecondary mt-1 mb-5 leading-4 text-center">Improve your benefits</p>
+                <p className="text-md font-light txtprimary leading-4 text-left w-max-60 px-2 mb-5">
+                  Manage your data.<br />
+                  Search saving active.<br />
+                  Mark the properties you've already visited.<br />
+                  Add your favorites to your list and revisit them whenever you want.<br />
+                  Simple panel for storing data, images, videos, and virtual tours.<br />
+                  Publish your ad just once and it will appear on multiple platforms.<br />
+                  Get your listings on popular platforms like Idealista, Mivilla, ...<br />
+                  View your messages for each property.<br />
+                  List up to 50 properties for unlimited time.<br />
+                  Manage buyers messages.
+                </p>
+                <p className="txtaccent text-5xl text-center font-bold">15€</p>
+                <p className="txtaccent text-lg text-center -mt-3 mb-5">monthly</p>
+                <button className="basebutton appbutton">Get You PRO Plan</button>
+              </div>
             </div>
 
             <div className="bgsecondaryborder txtprimary rounded-xl shadow-lg p-8 border hover:shadow-xl transition-shadow">
@@ -94,20 +116,24 @@ const Paperwork = async () => {
                 <Sunrise size={100} />
               </div>
               <h1 className="text-2xl font-semibold txtaccent text-center leading-5">Agency Pro Plan +</h1>
-              <p className="text-lg font-light txtsecondary mt-1 mb-5 leading-4 text-center">Ultimate performance & lead generation</p>
-              <p className="txtprimary leading-4 mb-1">Manage your data.</p>
-              <p className="txtprimary leading-4 mb-1">Search saving active.</p>
-              <p className="txtprimary leading-4 mb-1">Mark the properties you've already visited.</p>
-              <p className="txtprimary leading-4 mb-1">Add favorites to your preferred ones.</p>
-              <p className="txtprimary leading-4 mb-1">Simple panel for storing data, images, videos, and virtual tours.</p>
-              <p className="txtprimary leading-4 mb-1">Publish your ad just once and it will appear on multiple platforms.</p>
-              <p className="txtprimary leading-4 mb-1">Get your listings on popular platforms like Idealista, Mivilla, ...</p>
-              <p className="txtprimary leading-4 mb-1">View your messages for each property.</p>
-              <p className="txtprimary leading-4 mb-1">List up to 50 properties for unlimited time.</p>
-              <p className="txtprimary leading-4 mb-5">Manage buyers messages.</p>
-              <p className="txtaccent text-5xl text-center font-bold">35€</p>
-              <p className="txtaccent text-lg text-center -mt-3 mb-5">monthly</p>
-              <button className="basebutton appbutton">Get You PRO Plan Plus</button>
+              <div className="flex flex-col items-center justify-center">
+                <p className="text-lg font-light txtsecondary mt-1 mb-5 leading-4 text-center">Ultimate performance & lead generation</p>
+                <p className="text-md font-light txtprimary leading-4 text-left w-max-60 px-2 mb-5">
+                  Manage your data.<br />
+                  Search saving active.<br />
+                  Mark the properties you've already visited.<br />
+                  Add your favorites to your list and revisit them whenever you want.<br />
+                  Simple panel for storing data, images, videos, and virtual tours.<br />
+                  Publish your ad just once and it will appear on multiple platforms.<br />
+                  Get your listings on popular platforms like Idealista, Mivilla, ...<br />
+                  View your messages for each property.<br />
+                  List up to 50 properties for unlimited time.<br />
+                  Manage buyers messages.
+                </p>
+                <p className="txtaccent text-5xl text-center font-bold">35€</p>
+                <p className="txtaccent text-lg text-center -mt-3 mb-5">monthly</p>
+                <button className="basebutton appbutton">Get You PRO Plan Plus</button>
+              </div>
             </div>
           </div>
         </section>

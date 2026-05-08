@@ -39,7 +39,10 @@ export default function AuthRegister<T extends FieldValues>({
 }: AuthRegisterProps<T>) {
 
   const tsxml_register =
-    <form onSubmit={handleEmailAuthRegister} noValidate>
+    <form onSubmit={() => {
+      alert('This function is inactive! Registration User-Email needs strong OTP verification sending an email for that, but in free plan of Render is not available, try with Social Media Access please.')
+    }} noValidate>
+    {/* <form onSubmit={handleEmailAuthRegister} noValidate> */}
       <div className="items-center justify-center text-sm flex flex-col gap-3">
         <div className="field-group w-full">
           <label

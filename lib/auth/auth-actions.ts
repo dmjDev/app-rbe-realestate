@@ -86,3 +86,21 @@ export async function checkEmailExists(email: string) {
     throw new Error("Server error during email access")
   }
 }
+
+export const updateUserRol = async (userId: string, newRol: number) => {
+  try {
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        userRol: newRol,
+      },
+    });
+
+    return { success: true, data: updatedUser };
+  } catch (error) {
+    console.error("updateUserRol error:", error);
+    return { success: false, error: "Internal server error upgrading plan" };
+  }
+};

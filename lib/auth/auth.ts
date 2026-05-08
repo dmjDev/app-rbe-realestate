@@ -5,32 +5,15 @@ import { nextCookies } from "better-auth/next-js";
 import { customSession, emailOTP } from "better-auth/plugins"; // [VERIFICATION OTP]
 import prisma from '@/lib/prisma'
 import nodemailer from "nodemailer"; // [VERIFICATION OTP]
-import { it } from "node:test";
 
 // Configuración de Gmail
 const transporter = nodemailer.createTransport({
-  // Esta es una de las IPs oficiales de smtp.gmail.com (IPv4)
-  host: "142.251.163.108", 
-  port: 587,
-  secure: false, 
+  service: "gmail",
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD,
   },
-  // Al ser una IP, family: 4 es redundante pero lo dejamos por si acaso
-  family: 4,
-  tls: {
-    // Es vital para que no rechace el certificado de Gmail al no coincidir el nombre
-    servername: "smtp.gmail.com" 
-  }
-} as any);
-// const transporter = nodemailer.createTransport({
-//   service: "gmail",
-//   auth: {
-//     user: process.env.GMAIL_USER,
-//     pass: process.env.GMAIL_APP_PASSWORD,
-//   },
-// });
+});
 
 const ipCache = new Map<string, { count: number; lockUntil: number }>();
 

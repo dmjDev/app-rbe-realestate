@@ -184,6 +184,6 @@ export async function updateItemWithProperty(itemId: string, data: any) {
 
   } catch (error: any) {
     console.error("Error en updateItemWithProperty:", error);
-    return { success: false, error: "Server error" };
+    return { success: false, error: "Update Item Server error" };
   }
 }

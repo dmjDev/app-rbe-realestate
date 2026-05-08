@@ -162,8 +162,9 @@ export const useFormController = (
       }), {}),
     } as MyFormValues;
   };
-  let formattedData = undefined;
-  if (propertieData && propertieData !== null) formattedData = mapDataToForm(propertieData);
+  const formattedData = propertieData 
+  ? mapDataToForm(propertieData) 
+  : undefined;
   // console.log('formattedData', formattedData)
 
   const methods = useForm<MyFormValues>({
