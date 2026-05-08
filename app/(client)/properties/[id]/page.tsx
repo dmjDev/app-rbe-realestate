@@ -42,12 +42,28 @@ export default async function PropertiesIdPage({
   // 3. Creamos el objeto aplanado
   const flatPropertieData = {
     id: itemId,
-    createdAt: createdAt?.toLocaleString(),
-    updatedAt: updatedAt?.toLocaleString(),
+    createdAt: createdAt?.toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }),
+    updatedAt: updatedAt?.toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }),
     ...rest,
     ipropId: iprops?.id,
-    ipropCreatedAt: iprops?.createdAt?.toLocaleString(),
-    ipropUpdatedAt: iprops?.updatedAt?.toLocaleString(),
+    ipropCreatedAt: iprops?.createdAt?.toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }),
+    ipropUpdatedAt: iprops?.updatedAt?.toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }),
     ...internalProps,
   };
 

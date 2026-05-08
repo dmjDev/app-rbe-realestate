@@ -24,8 +24,9 @@ const formatText = (str: any): string => {
 };
 
 export function PropertyDetails({ property, edit }: { property: any, edit: boolean }) {
-  const hasCoords = property.latitude && property.longitude;
-  const updatedAt = property.ipropUpdatedAt.split(',')[0];
+  const hasCoords = property.latitude && property.longitude
+  const updatedAt = property.ipropUpdatedAt;
+
   const isRenting = ['RENT', 'RENT_TO_BUY', 'HOLIDAY_RENT', 'LIFE_ESTATE'].includes(property.operType);
   let frequencyPay = '';
   if (isRenting && property.frequencyPay) {
@@ -52,7 +53,7 @@ export function PropertyDetails({ property, edit }: { property: any, edit: boole
       address += `(${formatText(property.neighborhood)}) `;
     }
   }
-  
+
   return (
     <div className="max-w-350 mx-auto w-full animate-in fade-in slide-in-from-bottom-6 duration-1000">
 
@@ -227,13 +228,13 @@ export function PropertyDetails({ property, edit }: { property: any, edit: boole
               </div>
 
               <div className="space-y-3">
-                <button className="basebutton appbutton" 
+                <button className="basebutton appbutton"
                   onClick={() => {
                     alert("Under Construction")
                   }}>
                   More info
                 </button>
-                <button className="basebutton appwhitebutton" 
+                <button className="basebutton appwhitebutton"
                   onClick={() => {
                     alert("Under Construction")
                   }}>

@@ -50,7 +50,7 @@ export function PropertyCard({ item, userId, edit }: { item: PropertyItem, userI
     `}>
       <div className='relative h-64 w-full overflow-hidden rounded-t-lg'>
         <ImageCarousel images={item.imagePaths} itemId={item.itemId} userId={userId} edit={edit} />
-      </div>      
+      </div>
       {edit && (
         <>
           <button onClick={handleEdit} title={`Edit item ${item.itemRef} :: ${item.itemId}`}
@@ -88,7 +88,11 @@ export function PropertyCard({ item, userId, edit }: { item: PropertyItem, userI
         <div className="price-tag">{item.price.toLocaleString()}€<span className='text-lg lowercase font-light txtsecondaryfaded'>{frequencyPay}</span></div>
         <div className="ref-tag">
           <span>{item.itemRef}</span>
-          <span>{new Date(item.updatedAt).toLocaleDateString('es-ES')}</span>
+          <span>{new Date(item.updatedAt).toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          })}</span>
         </div>
         <h3 className="font-bold text-lg leading-4 line-clamp-2" style={{ color: "var(--app-text)" }}>
           {item.itemName}
