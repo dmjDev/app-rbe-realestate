@@ -179,10 +179,10 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, itemId, us
       {/* Navegación */}
       {images.length > 1 && (
         <>
-          <button onClick={prev} className="carousel-btn carousel-btn-left group-hover:translate-x-0 -translate-x-2">
+          <button onClick={prev} className="carousel-btn carousel-btn-left translate-x-0 sm:group-hover:translate-x-0 sm:-translate-x-2">
             <ChevronLeft size={20} />
           </button>
-          <button onClick={next} className="carousel-btn carousel-btn-right group-hover:translate-x-0 translate-x-2">
+          <button onClick={next} className="carousel-btn carousel-btn-right translate-x-0 sm:group-hover:translate-x-0 sm:translate-x-2">
             <ChevronRight size={20} />
           </button>
 

@@ -41,11 +41,11 @@ const Paperwork = async () => {
                     href="/auth"
                     className="basebutton appbutton text-center"
                   >
-                    Better Client Experience for FREE
+                    Register for a better user experience for FREE
                   </Link>
                 )}
                 {isSession && (
-                  <button className="basebutton appbutton" disabled>Better Client Experience for FREE</button>
+                  <button className="basebutton appbutton" disabled>Register for a better user experience for FREE</button>
                 )}
               </div>
             </div>
@@ -66,14 +66,14 @@ const Paperwork = async () => {
                   List your property for free for a month.<br />
                   Receive buyers messages.<br />
                 </p>
-                <p className="txtaccent text-5xl text-center font-bold">5€</p>
-                <p className="txtaccent text-lg text-center -mt-1 mb-5 leading-4">annualy<br />(first month free)</p>
+                <p className="txtaccent text-5xl text-center font-bold w-60">Try FREE</p>
+                <p className="txtaccent text-lg text-right mb-5 leading-4 w-50">User Manager</p>
                 {!isSession && (
                   <Link
                     href="/auth"
                     className="basebutton appbutton text-center"
                   >
-                    Get You FREE Plan for a month
+                    Try FREE Demo
                   </Link>
                 )}
                 {(isSession && rol < 10) && (

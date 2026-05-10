@@ -113,7 +113,7 @@ body {
 
 /* Button styles */
 .basebutton {
-  @apply flex items-center justify-center rounded-full shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 py-2 text-base font-medium leading-3;
+  @apply flex items-center justify-center rounded-full shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer px-4 py-2 text-base font-medium leading-3.5 transition-colors;
   width: 100%;
   max-width: 300px;
   height: 50px;

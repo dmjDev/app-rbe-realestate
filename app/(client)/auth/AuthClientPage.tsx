@@ -60,6 +60,10 @@ export default function AuthClientPage() {
 
   useEffect(() => {
     // console.log('step', step)
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   }, [step])
 
 
