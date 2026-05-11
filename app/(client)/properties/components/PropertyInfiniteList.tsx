@@ -18,8 +18,12 @@ export function PropertyInfiniteList({ initialItems, searchParams, userId, total
   const observerTarget = useRef<HTMLDivElement>(null);
   const isRestoring = useRef(false);
 
+  const parsedProvData = sessionStorage.getItem('last_prov_results') ? JSON.parse(sessionStorage.getItem('last_prov_results') as string) : null;
+
   // CAMBIO DE ORDEN ORDERLIST
   useEffect(() => {
+    if (mode === 'PROV' && searchParams.prov !== parsedProvData?.prov) sessionStorage.removeItem('last_scroll_pos');
+    
     setAllProperties(initialItems);
     setHasMore(initialItems.length >= itemsPage);
     setSkipState(initialItems.length < itemsPage ? initialItems.length : itemsPage);
@@ -30,16 +34,33 @@ export function PropertyInfiniteList({ initialItems, searchParams, userId, total
   useEffect(() => {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
-    let savedData = null;
+    if (totalCount === 0) {
+      sessionStorage.removeItem('pending_urls');
+      sessionStorage.removeItem('last_id_results');
+      sessionStorage.removeItem('last_prov_results');
+      sessionStorage.removeItem('last_search_results');
+      sessionStorage.removeItem('last_scroll_pos');
+      sessionStorage.removeItem('last_order');
+      return;
+    }
+
+    let savedData: string | null = null;
     if (mode === 'ID') savedData = sessionStorage.getItem('last_id_results');
-    if (mode === 'PROV') savedData = sessionStorage.getItem('last_prov_results');
+    if (mode === 'PROV') {
+      if (searchParams.prov === parsedProvData?.prov) {
+        savedData = sessionStorage.getItem('last_prov_results');
+      } else {
+        sessionStorage.removeItem('last_scroll_pos');
+      }
+    }
     if (mode === 'FILTER') savedData = sessionStorage.getItem('last_search_results');
+
     const savedScrollY = sessionStorage.getItem('last_scroll_pos');
-    // console.log('mode en infinite', mode)
+    // console.log('mode en infinite', mode, savedScrollY)
 
     if (savedData) {
       isRestoring.current = true;
-      const parsed = JSON.parse(savedData);
+      const parsed = JSON.parse(savedData) as { properties: PropertyItem[]; hasMore: boolean };
       // console.log('num properties en infinite', parsed.properties.length)
 
       // IMPORTANTE: Sobrescribimos con lo guardado solo si hay datos, 
@@ -76,6 +97,7 @@ export function PropertyInfiniteList({ initialItems, searchParams, userId, total
         // console.log('PROV')
         sessionStorage.setItem('last_prov_results', JSON.stringify({
           properties: allProperties,
+          prov: searchParams.prov,
           hasMore
         }));
       }
@@ -100,6 +122,7 @@ export function PropertyInfiniteList({ initialItems, searchParams, userId, total
         const currentScroll = window.scrollY;
         if (currentScroll > 0) {
           sessionStorage.setItem('last_scroll_pos', currentScroll.toString());
+          // console.log('scroll', currentScroll.toString())
         }
       }, 200);
     };
