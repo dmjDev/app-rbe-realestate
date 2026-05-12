@@ -5,6 +5,7 @@ import { useFormContext } from "react-hook-form";
 import { MyFormValues } from "../schemas/formInterface";
 import dynamic from "next/dynamic";
 import { FolderOpen, Video } from "lucide-react";
+import MsgError from "@/components/MsgError";
 const ReactPlayer = dynamic<any>(
   () => import("react-player").then((mod) => mod.default || mod),
   { ssr: false }
@@ -19,7 +20,7 @@ export interface VideoComponentHandle {
 }
 
 interface VideoComponentProps {
-  propertyId?: string; // ID para cargar video existente
+  propertyId?: string; // ID VIDEO
 }
 
 const VideoComponent = forwardRef<VideoComponentHandle, VideoComponentProps>(({ propertyId }, ref) => {
@@ -32,6 +33,7 @@ const VideoComponent = forwardRef<VideoComponentHandle, VideoComponentProps>(({ 
   const [uploading, setUploading] = useState<boolean>(false);
   const [activeVideo, setActiveVideo] = useState<string>("");
   const [activeTour, setActiveTour] = useState<string>("");
+  const [error, setError] = useState('');
 
   // Limpieza de memoria si queremos que al guardar y volver a cargar no se vea el video
   // useEffect(() => {
@@ -65,7 +67,8 @@ const VideoComponent = forwardRef<VideoComponentHandle, VideoComponentProps>(({ 
 
       try {
         // Usamos GET en lugar de HEAD para poder leer el Content-Type de la respuesta
-        const response = await fetch(apiUrl);
+        // const response = await fetch(apiUrl);
+        const response = await fetch(apiUrl, { method: 'HEAD' });
 
         if (response.ok) {
           const contentType = response.headers.get("content-type");
@@ -114,10 +117,11 @@ const VideoComponent = forwardRef<VideoComponentHandle, VideoComponentProps>(({ 
   }));
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setError('');
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       if (selectedFile.type !== "video/mp4" || selectedFile.size > 10 * 1024 * 1024) {
-        alert("Archivo no válido: MP4 y máximo 10MB");
+        setError("Please select an MP4 video under 10MB.");
         return;
       }
       setFile(selectedFile);
@@ -217,6 +221,7 @@ const VideoComponent = forwardRef<VideoComponentHandle, VideoComponentProps>(({ 
       </div>
       <div className="section-content">
         <div className="field-group">
+          {error && (<MsgError error={error} />)}
           <label className="field-label">Property video</label>
           <div className="file-input-wrapper">
             {!previewUrl ? (

@@ -74,7 +74,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, itemId, us
     // 3. Sincronizamos con la BASE DE DATOS
     if (userId && userId !== "") {
       try {
-        const result = await saveItem(idSaved, itemId, userId, newState);
+        const result = await saveItem(idSaved, itemId, newState);
 
         // Si el item era nuevo (idSaved era ""), Prisma nos devuelve el ID real
         // Debemos actualizar el Provider con ese ID para que el siguiente click sea un 'update' y no un 'create'
@@ -92,7 +92,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, itemId, us
 
   if (!images || images.length === 0) {
     return (
-      <Link scroll={false} href={`/properties/${itemId}?idSaved=${idSaved}&userId=${userId}&state=${savedState}&edit=${edit}`}
+      <Link scroll={false} href={`/properties/${itemId}?idSaved=${idSaved}&state=${savedState}&edit=${edit}`}
         onClick={() => {
           sessionStorage.removeItem('pending_urls');
         }}
@@ -133,7 +133,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, itemId, us
 
   return (
     <div className="relative h-64 w-full overflow-hidden group bg-black">
-      <Link scroll={false} href={`/properties/${itemId}?idSaved=${idSaved}&userId=${userId}&state=${savedState}&edit=${edit}`}
+      <Link scroll={false} href={`/properties/${itemId}?idSaved=${idSaved}&state=${savedState}&edit=${edit}`}
         onClick={() => {
           sessionStorage.setItem('pending_urls', JSON.stringify(images));
         }}

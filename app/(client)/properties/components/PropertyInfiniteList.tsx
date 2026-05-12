@@ -18,12 +18,14 @@ export function PropertyInfiniteList({ initialItems, searchParams, userId, total
   const observerTarget = useRef<HTMLDivElement>(null);
   const isRestoring = useRef(false);
 
-  const parsedProvData = sessionStorage.getItem('last_prov_results') ? JSON.parse(sessionStorage.getItem('last_prov_results') as string) : null;
+  const parsedProvData = typeof window !== 'undefined' && sessionStorage.getItem('last_prov_results')
+    ? JSON.parse(sessionStorage.getItem('last_prov_results') as string)
+    : null;
 
   // CAMBIO DE ORDEN ORDERLIST
   useEffect(() => {
     if (mode === 'PROV' && searchParams.prov !== parsedProvData?.prov) sessionStorage.removeItem('last_scroll_pos');
-    
+
     setAllProperties(initialItems);
     setHasMore(initialItems.length >= itemsPage);
     setSkipState(initialItems.length < itemsPage ? initialItems.length : itemsPage);
@@ -80,7 +82,7 @@ export function PropertyInfiniteList({ initialItems, searchParams, userId, total
     });
   }, []); // SE EJECUTA AL MONTAR LA PAGINA, CARGA LOS DATOS DE SESSIONSTORAGE SI EXISTEN
 
-  // 2. Guardar datos acumulados (Separado del scroll para eficiencia)
+  // Guardar datos acumulados (Separado del scroll para eficiencia)
   useEffect(() => {
     // No guardamos si estamos en medio de una restauración
     if (isRestoring.current) return;
@@ -111,7 +113,7 @@ export function PropertyInfiniteList({ initialItems, searchParams, userId, total
     }
   }, [allProperties, hasMore]); // CUANDO CAMBIA ALLPROPERTIES O HASMORE INYECTA LOS NUEVOS DATOS AL SESSIONSTORAGE
 
-  // 3. Guardar posición de scroll (Debounced)
+  // Guardar posición de scroll (Debounced)
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
     const handleScroll = () => {
@@ -140,7 +142,7 @@ export function PropertyInfiniteList({ initialItems, searchParams, userId, total
     setLoading(true);
     const currentSkip = allProperties.length;
 
-    const newItems = await fetchMoreProperties(searchParams, currentSkip, itemsPage, mode, order);
+    const newItems = await fetchMoreProperties(userId, searchParams, currentSkip, itemsPage, mode, order);
     const count = currentSkip + itemsPage <= totalCount ? currentSkip + itemsPage : totalCount;
     setSkipState(count);
 
@@ -157,7 +159,7 @@ export function PropertyInfiniteList({ initialItems, searchParams, userId, total
     setLoading(false);
   }, [loading, hasMore, allProperties.length, searchParams, itemsPage, mode, order]);
 
-  // 5. Observer
+  // Observer
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && hasMore && !loading && !isRestoring.current) {

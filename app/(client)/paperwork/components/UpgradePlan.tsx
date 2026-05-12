@@ -15,8 +15,6 @@ interface UpgradePlanProps {
 }
 
 const UpgradePlan = ({ rol, session }: UpgradePlanProps) => {
-  const userId = session.user.id;
-
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
 
@@ -27,7 +25,7 @@ const UpgradePlan = ({ rol, session }: UpgradePlanProps) => {
     setIsPending(true);
 
     try {
-      const result = await updateUserRol(userId, rol);
+      const result = await updateUserRol(session.user.id, rol);
 
       if (!result.success) {
         setError(result.error as string);

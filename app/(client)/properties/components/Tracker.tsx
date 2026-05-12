@@ -28,7 +28,7 @@ export function Tracker({ idSaved, itemId, userId, state }: TrackerProps) {
         updateItemStatus(itemId, newState, idSaved);
 
         // Guardamos y sincronizamos ID real de DB
-        const result = await saveItem(idSaved, itemId, userId, newState);
+        const result = await saveItem(idSaved, itemId, newState);
         if (idSaved === "" && result) {
           const newItem = result.find((i: any) => i.itemId === itemId);
           if (newItem) {
@@ -59,7 +59,7 @@ export function Tracker({ idSaved, itemId, userId, state }: TrackerProps) {
     // Guardamos y sincronizamos ID real de DB
     if (userId && userId !== "") {
       try {
-        const result = await saveItem(idSaved, itemId, userId, newState);
+        const result = await saveItem(idSaved, itemId, newState);
         if (idSaved === "" && result) {
           const newItem = result.find((i: any) => i.itemId === itemId);
           if (newItem) {

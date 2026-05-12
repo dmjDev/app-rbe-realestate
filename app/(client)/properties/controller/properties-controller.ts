@@ -6,6 +6,8 @@ import fs from 'fs';
 import path from 'path';
 import { getBoundingBox } from "./getBoundigBox";
 import { Prisma } from "@/app/generated/prisma/client";
+import { auth } from "@/lib/auth/auth";
+import { headers } from "next/headers";
 
 export interface PropertyItem {
   itemId: string;
@@ -49,6 +51,10 @@ interface OrderConfig {
 }
 
 const cacheTime = 3600;
+
+const getSession = async () => {
+  return await auth.api.getSession({ headers: await headers() });
+};
 
 // BUSQUEDA POR PROVINCES SEARCHREFFORM
 export const getProvCount = async (params: any) => {
@@ -178,14 +184,12 @@ export const getProvProperties = async (params: any, skip: number, take: number,
 };
 
 // BUSQUEDA POR REFERENCIA SEARCHREFFORM
-export const getUserIdCount = async (params: any) => {
-  const searchKey = JSON.stringify(params);
-
+export const getUserIdCount = async (userId: string) => {
   const getCount = unstable_cache(
-    async (_q: string) => {
+    async (uid: string) => {
       try {
         const total = await prisma.items.count({
-          where: { managerId: params.userId }
+          where: { managerId: uid }
         });
 
         return total;
@@ -198,11 +202,10 @@ export const getUserIdCount = async (params: any) => {
     { revalidate: cacheTime, tags: ['properties'] }
   );
 
-  return getCount(searchKey);
+  return getCount(userId);
 }
 
-export const getUserIdProperties = async (params: any, skip: number, take: number, order: OrderConfig): Promise<PropertyItem[]> => {
-  // Envolvemos la lógica en la función cacheada
+export const getUserIdProperties = async (userId: string, skip: number, take: number, order: OrderConfig): Promise<PropertyItem[]> => {
   const cacheFetch = unstable_cache(
     async (uId: string, s: number, t: number, ordKey: string, ordVec: string) => {
       const isPropertyKey = ['price', 'builtSize', 'updatedAt'].includes(ordKey); // en Items -> itemRef
@@ -293,7 +296,7 @@ export const getUserIdProperties = async (params: any, skip: number, take: numbe
   );
 
   // IMPORTANTE: Pasamos los argumentos aquí para que formen parte de la cache key automáticamente
-  return cacheFetch(params.userId, skip, take, order.key, order.vector);
+  return cacheFetch(userId, skip, take, order.key, order.vector);
 };
 
 
@@ -478,23 +481,24 @@ export const getFilteredProperties = async (params: any, skip: number, take: num
 };
 
 // Función para cargar más propiedades (paginación) desde el cliente, reutilizando la lógica de filtrado y cacheo de getFilteredProperties
-export async function fetchMoreProperties(params: any, skip: number, take: number, mode: string, order: any) {
-  if (mode === 'ID') return await getUserIdProperties(params, skip, take, order);
+export async function fetchMoreProperties(userId: string, params: any, skip: number, take: number, mode: string, order: any) {
+  if (mode === 'ID') return await getUserIdProperties(userId, skip, take, order);
   if (mode === 'PROV') return await getProvProperties(params, skip, take, order);
   if (mode === 'FILTER') return await getFilteredProperties(params, skip, take, order);
 }
 // --------------------------------------------------------------------------------------------------------------
 
 // CONSULTA A DB PARA OBTENER LOS DATOS DEL INMUEBLE SEGÚN SU REFERENCIA
-export async function getPropertyByReference(ref: string, userId: string) {
+export async function getPropertyByReference(ref: string) {
+  const session = await getSession();
   if (!ref) return { success: false, error: "Reference is required" };
   try {
     const item = await prisma.items.findFirst({
       where: {
         itemRef: ref,
         OR: [
-          { managerId: userId }, // Si managerId y userId coinciden, entonces no indica active en ninguna condición
-          { active: true }       // Si llega hasta aquí es porque la información la está leyendo otro usuario, por lo tanto active true
+          { managerId: session?.user.id || "" },
+          { active: true }
         ]
       },
       include: {
@@ -579,7 +583,7 @@ export async function getPropertyByReference(ref: string, userId: string) {
   }
 }
 
-export async function getRandomPropertyAction(userId: string) {
+export async function getRandomPropertyAction() {
   const itemCount = await prisma.items.count({
     where: {
       active: true,
@@ -600,7 +604,7 @@ export async function getRandomPropertyAction(userId: string) {
     return { success: false, error: "No items found" };
   }
 
-  const response = await getPropertyByReference(randItem.itemRef.trim(), userId);
+  const response = await getPropertyByReference(randItem.itemRef.trim());
   return response;
 }
 
@@ -688,16 +692,19 @@ export async function getHomePromosProperties(limit: number) {
       } as PropertyItem;
     });
   } catch (error) {
-    console.error("Error en getUserIdProperties:", error);
+    console.error("Error en getHomePromosProperties:", error);
     return [];
   }
 }
 // --------------------------------------------------------------------------------------
 
 // ACTUALIZA LA URL DE BÚSQUEDA GUARDADA DEL USUARIO PARA MOSTRARLA EN LA PÁGINA DE PROPIEDADES GUARDADAS
-export async function updateUserSearchUrl(userId: string, url: string) {
+export async function updateUserSearchUrl(url: string) {
+  const session = await getSession();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
   try {
-    await prisma.user.update({ where: { id: userId }, data: { urlSearch: url } });
+    await prisma.user.update({ where: { id: session?.user.id || "" }, data: { urlSearch: url } });
     revalidatePath("/");
   } catch (error) {
     throw new Error("No se pudo guardar la búsqueda");
@@ -705,22 +712,26 @@ export async function updateUserSearchUrl(userId: string, url: string) {
 }
 
 // CONSULTA LOS ITEMS GUARDADOS DEL USUARIO PARA MOSTRARLOS EN LA PÁGINA DE PROPIEDADES GUARDADAS
-export const getItemsSaved = async (userId: string) => {
+export const getItemsSaved = async () => {
+  const session = await getSession();
   return await prisma.itemsSaved.findMany({
-    where: { clientId: userId }
+    where: { clientId: session?.user.id || "" }
   });
 };
 
 // GUARDA O ACTUALIZA EL ESTADO DE UN ITEM GUARDADO (FAVORITO) PARA UN USUARIO, Y DEVUELVE LA LISTA ACTUALIZADA DE ITEMS GUARDADOS PARA MOSTRARLA EN LA PÁGINA DE PROPIEDADES GUARDADAS
-export async function saveItem(Id: string, itemId: string, userId: string, newState: string) {
+export async function saveItem(Id: string, itemId: string, newState: string) {
+  const session = await getSession();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
   if (Id === "") {
     const exists = await prisma.itemsSaved.findFirst({
-      where: { itemId, clientId: userId }
+      where: { itemId, clientId: session?.user.id || "" }
     });
 
     if (!exists) {
       await prisma.itemsSaved.create({
-        data: { itemId, clientId: userId, state: newState }
+        data: { itemId, clientId: session?.user.id || "", state: newState }
       });
     } else {
       await prisma.itemsSaved.update({
@@ -734,6 +745,6 @@ export async function saveItem(Id: string, itemId: string, userId: string, newSt
       data: { state: newState }
     });
   }
-  return getItemsSaved(userId);
+  return getItemsSaved();
 }
 

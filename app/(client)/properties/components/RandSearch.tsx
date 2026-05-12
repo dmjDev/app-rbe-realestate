@@ -11,14 +11,14 @@ export default function RandSearch({ userId }: ItemListProps) {
   const router = useRouter();
 
   const searchRand = async () => {
-    const response = await getRandomPropertyAction(userId);
+    const response = await getRandomPropertyAction();
 
     if (response.success && response.data) {
       const { itemId, isavedId, isavedState, imagePaths } = response.data;
       
       const idSaved = isavedId ?? "";
       const savedState = isavedState ?? "";
-      const URL = `/properties/${itemId}?idSaved=${idSaved}&userId=${userId}&state=${savedState}&edit=${false}`;
+      const URL = `/properties/${itemId}?idSaved=${idSaved}&state=${savedState}&edit=${false}`;
       
       sessionStorage.setItem('pending_urls', JSON.stringify(imagePaths));
       

@@ -41,7 +41,7 @@ const SearchRefForm = ({ setIsLoading, setError, setSuccess, isLoading, userId, 
     setError("");
     setSuccess("");
 
-    const response = await getPropertyByReference(data.itemRef.trim(), userId as string);
+    const response = await getPropertyByReference(data.itemRef.trim());
 
     if (response.success) {
       setSuccess(response.message as string);
@@ -49,7 +49,7 @@ const SearchRefForm = ({ setIsLoading, setError, setSuccess, isLoading, userId, 
       const itemId = response.data?.itemId;
       const idSaved = response.data?.isavedId ?? "";
       const savedState = response.data?.isavedState ?? "";
-      const URL = `/properties/${itemId}?idSaved=${idSaved}&userId=${userId}&state=${savedState}&edit=${edit}`;
+      const URL = `/properties/${itemId}?idSaved=${idSaved}&state=${savedState}&edit=${edit}`;
       sessionStorage.setItem('pending_urls', JSON.stringify(response.data?.imagePaths));
       router.push(URL);
     } else {
@@ -59,7 +59,7 @@ const SearchRefForm = ({ setIsLoading, setError, setSuccess, isLoading, userId, 
   };
 
   const handleViewMyProperties = () => {
-    const URL = `/properties?userId=${userId}`;
+    const URL = `/properties?userId=${true}`;
     router.push(URL);
   };
 

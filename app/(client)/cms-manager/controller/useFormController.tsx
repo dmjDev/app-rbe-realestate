@@ -303,7 +303,6 @@ export const useFormController = (
 
         if (localError === '') {
           router.refresh();
-          // router.push(`/properties?userId=${managerId}`)
         }
       }
 

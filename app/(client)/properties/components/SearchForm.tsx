@@ -249,7 +249,7 @@ export default function SearchForm({ userId, initialUrl }: { userId?: string, in
 
       // Si está logueado, guardamos esta búsqueda como su última "urlSearch"
       if (userId) {
-        await updateUserSearchUrl(userId, fullUrl);
+        await updateUserSearchUrl(fullUrl);
       }
 
       // Navegamos a resultados eliminando el estado de carga para que el efecto de restaurar scroll se ejecute en PropertyInfiniteList

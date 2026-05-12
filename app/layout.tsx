@@ -81,7 +81,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth.api.getSession({ headers: await headers() });
-  const itemsSaved = session ? await getItemsSaved(session.user.id) : [];
+  const itemsSaved = session ? await getItemsSaved() : [];
 
   return (
     <html lang="en" suppressHydrationWarning>

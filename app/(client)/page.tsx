@@ -9,11 +9,10 @@ import HomeDesign from "@/components/HomeDesign";
 
 export default async function Home() {
   const session = await auth.api.getSession({ headers: await headers() });
-  let userId = "";
+  const userId = session?.user.id || "";
   let urlSearch = "";
   if (session) {
     // console.log('session', session)
-    userId = session.user.id;
     urlSearch = session.user.urlSearch;
   }
 

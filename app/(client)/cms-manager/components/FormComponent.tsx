@@ -31,7 +31,7 @@ export const FormComponent = ({ session, propertieData }: { session: Session, pr
     const fetchDiskImages = async () => {
       if (propertieData?.id) {
         try {
-          const response = await fetch(`/api/get-images?id=${propertieData.id}`);
+          const response = await fetch(`/api/get-images?id=${propertieData.id}&uId=${session.user.id}`);
           const files: string[] = await response.json();
           fileController.setInitialImages(files.length as any);
 

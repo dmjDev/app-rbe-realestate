@@ -38,12 +38,23 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
     vector: (resolvedSearchParams.dir as any) || "asc"  //asc, desc
   };
 
-  if (resolvedSearchParams.userId) {
+  const paramUserIdTrue: boolean = String(resolvedSearchParams.userId).toLowerCase() === "true";
+  if ((resolvedSearchParams.userId && !paramUserIdTrue) || (resolvedSearchParams.userId &&!session)) {
+    return (
+      <main className="bgprimary">
+        <div className="ancho-global">
+          <p className="text-center text-lg mt-10">A user ID has not been specified to display its properties</p>
+        </div>
+      </main>
+    );
+  }
+  if (paramUserIdTrue) {
+    console.log('entra en ID')
     edit = true;
     mode = "ID";
     [initialProperties, totalCount] = await Promise.all([
-      getUserIdProperties(resolvedSearchParams, 0, itemsPage, order),
-      getUserIdCount(resolvedSearchParams)
+      getUserIdProperties(userId, 0, itemsPage, order),
+      getUserIdCount(userId)
     ]);
   } else if (resolvedSearchParams.prov) {
     mode = "PROV";

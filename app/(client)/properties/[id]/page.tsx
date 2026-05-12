@@ -3,17 +3,21 @@ import PropertyGallery from "./components/PropertyGallery";
 import { PropertyDetails } from "./components/PropertyDetails";
 import path from 'path';
 import fs from 'fs';
+import { auth } from "@/lib/auth/auth";
+import { headers } from "next/headers";
 
 export default async function PropertiesIdPage({
   params,
   searchParams
 }: {
   params: Promise<{ id: string }>,
-  searchParams: Promise<{ idSaved: string, userId: string, state: string, edit: string }>
+  searchParams: Promise<{ idSaved: string, state: string, edit: string }>
 }) {
   const { id } = await params;
-  const { idSaved, userId, state, edit: editString } = await searchParams;
-  const edit = editString === "true";
+  const { idSaved, state, edit: editString } = await searchParams;
+  const editUrl = editString === "true";
+  const session = await auth.api.getSession({ headers: await headers() });
+  const userId = session?.user.id || "";
 
   // CONSULTA DB DATOS POR id
   const propertieData = await prisma.items.findUnique({
@@ -24,8 +28,11 @@ export default async function PropertiesIdPage({
   });
 
   if (!propertieData) {
-    console.log('Data not found, id:', id);
-    return <></>;
+    return (
+      <section className="ancho-global">
+        <p>Property not found.</p>
+      </section>
+    );
   }
 
   // 1. Desestructuramos el objeto único directamente
@@ -89,6 +96,8 @@ export default async function PropertiesIdPage({
     videoUrlPath: flatPropertieData.videoUrl || "",
     virtualTourUrl: flatPropertieData.virtualTourUrl || ""
   };
+
+  const edit = editUrl && userId === flatPropertieData.managerId;
 
   return (
     <section className="ancho-global">
