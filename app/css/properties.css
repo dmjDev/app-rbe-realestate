@@ -128,3 +128,18 @@ input[type="range"] {
 .heart-button:hover {
   background-color: transparent;
 }
+
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0.1;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-quick {
+  animation: fadeIn 0.4s ease-in-out forwards;
+}

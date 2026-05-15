@@ -15,18 +15,15 @@ interface ImageCarouselProps {
 
 export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, itemId, userId, edit }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  // 1. Extrae AMBAS cosas del Provider
   const { itemsSaved, updateItemStatus } = useItems();
 
-  // 2. Estos estados locales ahora se sincronizarán con el Provider
   const [savedState, setSavedState] = useState("");
   const [idSaved, setIdSaved] = useState("");
 
-  const [isChanging, setIsChanging] = useState(false);
+  // Estado para controlar la salida de la imagen actual
+  const [isExiting, setIsExiting] = useState(false);
 
-  // Sincronizamos el estado local con el Provider global
   useEffect(() => {
-    // console.log('itemsSaved', itemsSaved)
     const currentItem = itemsSaved.find((item: any) => item.itemId === itemId);
     if (currentItem) {
       setIdSaved(currentItem.id);
@@ -38,12 +35,15 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, itemId, us
   }, [itemsSaved, itemId]);
 
   const changeSlide = (newIndex: number) => {
-    setIsChanging(true);
-    // Pequeño timeout para sincronizar el fade-out antes de cambiar el src
+    // 1. Iniciamos el desvanecimiento de la imagen que SALE
+    setIsExiting(true);
+    
+    // 2. Esperamos a que la imagen vieja sea casi invisible antes de cambiar el SRC
     setTimeout(() => {
       setCurrentIndex(newIndex);
-      setIsChanging(false);
-    }, 200);
+      // 3. Quitamos el estado de salida para que la nueva imagen entre con su propia animación CSS
+      setIsExiting(false);
+    }, 250); // Un poco menos que la transición de CSS para que sea fluido
   };
 
   const next = (e: React.MouseEvent) => {
@@ -59,30 +59,20 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, itemId, us
   const handleItem = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
-    // 1. Calculamos el nuevo estado basado en el estado ACTUAL
     let newState = "";
     if (savedState === "like") newState = "";
     else if (savedState === "visited") newState = "likeVisited";
     else if (savedState === "likeVisited") newState = "visited";
-    else newState = "like"; // Si está vacío o es cualquier otra cosa
+    else newState = "like";
 
-    // 2. Actualizamos el PROVIDER inmediatamente (UI rápida)
-    // Pasamos el idSaved actual. Si es "", el Provider sabrá que es nuevo.
     updateItemStatus(itemId, newState, idSaved);
 
-    // 3. Sincronizamos con la BASE DE DATOS
     if (userId && userId !== "") {
       try {
         const result = await saveItem(idSaved, itemId, newState);
-
-        // Si el item era nuevo (idSaved era ""), Prisma nos devuelve el ID real
-        // Debemos actualizar el Provider con ese ID para que el siguiente click sea un 'update' y no un 'create'
         if (idSaved === "" && result) {
           const newItem = result.find((i: any) => i.itemId === itemId);
-          if (newItem) {
-            updateItemStatus(itemId, newState, newItem.id);
-          }
+          if (newItem) updateItemStatus(itemId, newState, newItem.id);
         }
       } catch (error) {
         console.error("Error al guardar el estado:", error);
@@ -93,9 +83,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, itemId, us
   if (!images || images.length === 0) {
     return (
       <Link scroll={false} href={`/properties/${itemId}?idSaved=${idSaved}&state=${savedState}&edit=${edit}`}
-        onClick={() => {
-          sessionStorage.removeItem('pending_urls');
-        }}
+        onClick={() => sessionStorage.removeItem('pending_urls')}
       >
         <div
           className="relative h-64 w-full overflow-hidden flex flex-col items-center justify-center"
@@ -103,25 +91,19 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, itemId, us
         >
           <Home size={40} strokeWidth={1.5} />
           <p className="text-xs mt-2 uppercase tracking-wider">No picture</p>
-
-          {/* ICONO CORAZÓN */}
           {userId != "" && (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
               viewBox="0 0 24 24"
+              fill="none"
               stroke="currentColor"
               strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
               onClick={handleItem}
-              className={`absolute top-3 right-3 z-30 transition-colors cursor-pointer lucide lucide-heart 
-            ${savedState == "like" && 'fill-red-500 text-red-500'}
-            ${savedState == "likeVisited" && 'fill-red-500 text-green-500'}
-            ${savedState == "visited" && 'fill-none text-green-500 hover:fill-red-500'}
-            ${savedState == "" && 'fill-none text-white hover:fill-red-500'}
-            `}
+              className={`absolute top-3 right-3 z-30 cursor-pointer 
+                ${savedState.includes("like") ? 'fill-red-500 text-red-500' : 'text-white'}
+              `}
             >
               <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
             </svg>
@@ -134,23 +116,22 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, itemId, us
   return (
     <div className="relative h-64 w-full overflow-hidden group bg-black">
       <Link scroll={false} href={`/properties/${itemId}?idSaved=${idSaved}&state=${savedState}&edit=${edit}`}
-        onClick={() => {
-          sessionStorage.setItem('pending_urls', JSON.stringify(images));
-        }}
+        onClick={() => sessionStorage.setItem('pending_urls', JSON.stringify(images))}
       >
         <img
-          key={images[currentIndex]}
+          key={images[currentIndex]} // La key es vital para disparar la animación de entrada
           src={images[currentIndex]}
           alt={`${itemId} - ${currentIndex}`}
           loading="lazy"
-          className={`h-full w-full object-cover transition-opacity duration-300 ease-in-out ${isChanging ? 'opacity-40' : 'opacity-100'
-            }`}
+          className={`h-full w-full object-cover transition-opacity duration-300 ease-in-out animate-fade-in-quick
+            ${isExiting ? 'opacity-10' : 'opacity-100'}
+          `}
         />
       </Link>
 
       {/* ICONO CORAZÓN */}
       {userId != "" && (
-        <div className='heart-button'>
+        <div className='heart-button z-20'>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -158,10 +139,8 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, itemId, us
             viewBox="0 0 24 24"
             stroke="currentColor"
             strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
             onClick={handleItem}
-            className={`cursor-pointer lucide lucide-heart 
+            className={`cursor-pointer lucide-heart 
             ${savedState == "like" && 'fill-red-500 text-red-500'}
             ${savedState == "likeVisited" && 'fill-red-500 text-green-500'}
             ${savedState == "visited" && 'fill-none text-green-500 hover:fill-red-500'}
@@ -173,21 +152,18 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, itemId, us
         </div>
       )}
 
-      {/* Overlay gradiente inferior */}
-      <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent pointer-events-none z-10" />
 
-      {/* Navegación */}
       {images.length > 1 && (
         <>
-          <button onClick={prev} className="carousel-btn carousel-btn-left translate-x-0 sm:group-hover:translate-x-0 sm:-translate-x-2">
+          <button onClick={prev} className="carousel-btn carousel-btn-left z-20 translate-x-0 sm:group-hover:translate-x-0 sm:-translate-x-2">
             <ChevronLeft size={20} />
           </button>
-          <button onClick={next} className="carousel-btn carousel-btn-right translate-x-0 sm:group-hover:translate-x-0 sm:translate-x-2">
+          <button onClick={next} className="carousel-btn carousel-btn-right z-20 translate-x-0 sm:group-hover:translate-x-0 sm:translate-x-2">
             <ChevronRight size={20} />
           </button>
 
-          {/* Dots */}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
             {images.map((_, i) => (
               <div
                 key={i}
